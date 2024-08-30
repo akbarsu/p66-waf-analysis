@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/p66-waf-analysis/static/css/main.095aa2bc.css",
+    "main.js": "/p66-waf-analysis/static/js/main.d7d88f7c.js",
+    "static/js/453.8dc82d7e.chunk.js": "/p66-waf-analysis/static/js/453.8dc82d7e.chunk.js",
+    "index.html": "/p66-waf-analysis/index.html",
+    "main.095aa2bc.css.map": "/p66-waf-analysis/static/css/main.095aa2bc.css.map",
+    "main.d7d88f7c.js.map": "/p66-waf-analysis/static/js/main.d7d88f7c.js.map",
+    "453.8dc82d7e.chunk.js.map": "/p66-waf-analysis/static/js/453.8dc82d7e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.095aa2bc.css",
+    "static/js/main.d7d88f7c.js"
+  ]
+}
