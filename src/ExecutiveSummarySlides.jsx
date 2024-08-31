@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ArrowRight, Check, X, AlertTriangle, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Slide = ({ title, children }) => (
-  <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg mb-12 transition-colors duration-300">
-    <h2 className="text-3xl font-display font-bold mb-6 text-primary-800 dark:text-primary-300">{title}</h2>
+  <div className="bg-white dark:bg-gray-800 p-4 sm:p-8 rounded-lg shadow-lg mb-6 sm:mb-12 transition-colors duration-300">
+    <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 sm:mb-6 text-primary-800 dark:text-primary-300">{title}</h2>
     {children}
   </div>
 );
 
 const TalkingPoint = ({ children }) => (
-  <div className="flex items-start mt-4">
-    <ArrowRight className="text-primary-500 dark:text-primary-400 mr-3 mt-1 flex-shrink-0" />
-    <p className="text-secondary-700 dark:text-secondary-300">{children}</p>
+  <div className="flex items-start mt-2 sm:mt-4">
+    <ArrowRight className="text-primary-500 dark:text-primary-400 mr-2 sm:mr-3 mt-1 flex-shrink-0" />
+    <p className="text-secondary-700 dark:text-secondary-300 text-sm sm:text-base">{children}</p>
   </div>
 );
 
 const FlowChartBox = ({ children, color = "bg-primary-100" }) => (
-  <div className={`${color} dark:bg-gray-700 border border-primary-300 dark:border-primary-600 rounded-lg p-3 text-center font-medium text-primary-800 dark:text-primary-200 transition-colors duration-300`}>
+  <div className={`${color} dark:bg-gray-700 border border-primary-300 dark:border-primary-600 rounded-lg p-2 sm:p-3 text-center font-medium text-primary-800 dark:text-primary-200 transition-colors duration-300 text-sm sm:text-base`}>
     {children}
   </div>
 );
 
 const FlowChartArrow = () => (
-  <div className="flex justify-center my-3">
+  <div className="flex justify-center my-2 sm:my-3">
     <ArrowDown className="text-primary-400 dark:text-primary-500" />
   </div>
 );
@@ -58,6 +58,9 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const ExecutiveSummarySlides = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const slideRef = useRef(null);
   const slides = [
     { title: "Project Overview", component: ProjectOverviewSlide },
     { title: "Current State Analysis", component: CurrentStateAnalysisSlide },
@@ -84,35 +87,72 @@ const ExecutiveSummarySlides = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  useEffect(() => {
+    if (slideRef.current) {
+      slideRef.current.focus();
+    }
+  }, [currentSlide]);
+
   const CurrentSlideComponent = slides[currentSlide].component;
 
   return (
-    <div className="p-8 min-h-screen flex flex-col transition-colors duration-300">
-      <h1 className="text-5xl font-display font-bold mb-12 text-center text-primary-900 dark:text-primary-100">
+    <div className="p-4 sm:p-8 min-h-screen flex flex-col transition-colors duration-300">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold mb-6 sm:mb-12 text-center text-primary-900 dark:text-primary-100">
         P66 Cross-Cloud WAF Analysis: Enhanced Executive Summary
       </h1>
       
-      <div className="flex-grow flex flex-col justify-center">
+      <div 
+        className="flex-grow flex flex-col justify-center"
+        ref={slideRef}
+        tabIndex={0}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <Slide title={slides[currentSlide].title}>
           <CurrentSlideComponent />
         </Slide>
       </div>
       
-      <div className="flex justify-between items-center mt-8">
+      <div className="flex justify-between items-center mt-4 sm:mt-8">
         <button
           onClick={prevSlide}
-          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-full flex items-center transition-colors duration-300"
+          className="bg-primary-500 hover:bg-primary-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center transition-colors duration-300 text-sm sm:text-base"
         >
-          <ChevronLeft className="mr-2" /> Previous
+          <ChevronLeft className="mr-1 sm:mr-2" /> Previous
         </button>
-        <span className="text-secondary-600 dark:text-secondary-400">
+        <span className="text-secondary-600 dark:text-secondary-400 text-sm sm:text-base">
           {currentSlide + 1} / {slides.length}
         </span>
         <button
           onClick={nextSlide}
-          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-full flex items-center transition-colors duration-300"
+          className="bg-primary-500 hover:bg-primary-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center transition-colors duration-300 text-sm sm:text-base"
         >
-          Next <ChevronRight className="ml-2" />
+          Next <ChevronRight className="ml-1 sm:ml-2" />
         </button>
       </div>
     </div>
@@ -120,19 +160,19 @@ const ExecutiveSummarySlides = () => {
 };
 
 const ProjectOverviewSlide = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <div className="bg-primary-50 dark:bg-gray-700 p-6 rounded-lg transition-colors duration-300">
-      <h3 className="font-display font-semibold text-xl mb-4 text-primary-800 dark:text-primary-200">Scope</h3>
-      <ul className="list-disc pl-6 space-y-2 text-secondary-700 dark:text-secondary-300">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+    <div className="bg-primary-50 dark:bg-gray-700 p-4 sm:p-6 rounded-lg transition-colors duration-300">
+      <h3 className="font-display font-semibold text-lg sm:text-xl mb-2 sm:mb-4 text-primary-800 dark:text-primary-200">Scope</h3>
+      <ul className="list-disc pl-4 sm:pl-6 space-y-1 sm:space-y-2 text-secondary-700 dark:text-secondary-300 text-sm sm:text-base">
         <li>Comprehensive analysis of WAF implementations</li>
         <li>AWS and Azure cloud environments</li>
         <li>4,834 AWS WAF items across 172 accounts</li>
         <li>41 Azure WAF policies across multiple subscriptions</li>
       </ul>
     </div>
-    <div className="bg-primary-50 dark:bg-gray-700 p-6 rounded-lg transition-colors duration-300">
-      <h3 className="font-display font-semibold text-xl mb-4 text-primary-800 dark:text-primary-200">Objectives</h3>
-      <ul className="list-disc pl-6 space-y-2 text-secondary-700 dark:text-secondary-300">
+    <div className="bg-primary-50 dark:bg-gray-700 p-4 sm:p-6 rounded-lg transition-colors duration-300">
+      <h3 className="font-display font-semibold text-lg sm:text-xl mb-2 sm:mb-4 text-primary-800 dark:text-primary-200">Objectives</h3>
+      <ul className="list-disc pl-4 sm:pl-6 space-y-1 sm:space-y-2 text-secondary-700 dark:text-secondary-300 text-sm sm:text-base">
         <li>Assess current WAF security posture</li>
         <li>Identify gaps and inconsistencies</li>
         <li>Provide actionable recommendations</li>
@@ -473,20 +513,23 @@ const MermaidDiagram = ({ chart }) => {
       },
       themeCSS: `
         .node rect { fill: #f4f4f4; stroke: #999; stroke-width: 1px; }
-        .node text { font-size: 14px; font-weight: 300; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+        .node text { font-size: 12px; font-weight: 300; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
         .edgePath path { stroke: #666; stroke-width: 1.5px; }
         .cluster rect { fill: #f0f0f0; stroke: #999; stroke-width: 1px; }
       `,
-      fontSize: 18,
+      fontSize: 12,
     });
     mermaid.contentLoaded();
   }, [chart]);
 
   return (
-    <div className="mermaid-wrapper w-full overflow-x-auto my-8">
-      <div className="mermaid text-center" style={{ minWidth: '800px', width: '100%', height: 'auto' }}>{chart}</div>
+    <div className="mermaid-wrapper w-full overflow-x-auto my-4 sm:my-8">
+      <div className="mermaid text-center" style={{ minWidth: '100%', width: '100%', height: 'auto' }}>{chart}</div>
     </div>
   );
+};
+
+export default ExecutiveSummarySlides;
 };
 
 const WAFArchitectureDiagrams = () => {

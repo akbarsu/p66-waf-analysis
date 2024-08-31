@@ -20,3 +20,34 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Mobile-friendly styles */
+@media (max-width: 640px) {
+  .recharts-wrapper {
+    font-size: 10px;
+  }
+
+  .recharts-surface {
+    overflow: visible;
+  }
+
+  .recharts-legend-wrapper {
+    position: relative !important;
+    margin-top: 8px;
+  }
+}
+
+/* Improve touch targets for mobile */
+button, a {
+  @apply p-2;
+}
+
+/* Smooth scrolling for iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+}
